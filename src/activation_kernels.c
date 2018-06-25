@@ -8,13 +8,13 @@ extern "C" {
 }
 
 
-__device__ float lhtan_activate_kernel(float x)
+__device__ float lhtan_activate_kernel(float x)   //在0-1以外都leaky的relu
 {
     if(x < 0) return .001*x;
     if(x > 1) return .001*(x-1) + 1;
     return x;
 }
-__device__ float lhtan_gradient_kernel(float x)
+__device__ float lhtan_gradient_kernel(float x) //双leaky relu梯度
 {
     if(x > 0 && x < 1) return 1;
     return .001;
@@ -26,16 +26,16 @@ __device__ float hardtan_activate_kernel(float x)
     if (x > 1) return 1;
     return x;
 }
-__device__ float linear_activate_kernel(float x){return x;}
-__device__ float logistic_activate_kernel(float x){return 1./(1. + exp(-x));}
-__device__ float loggy_activate_kernel(float x){return 2./(1. + exp(-x)) - 1;}
-__device__ float relu_activate_kernel(float x){return x*(x>0);}
-__device__ float elu_activate_kernel(float x){return (x >= 0)*x + (x < 0)*(exp(x)-1);}
-__device__ float relie_activate_kernel(float x){return (x>0) ? x : .01*x;}
-__device__ float ramp_activate_kernel(float x){return x*(x>0)+.1*x;}
-__device__ float leaky_activate_kernel(float x){return (x>0) ? x : .1*x;}
-__device__ float tanh_activate_kernel(float x){return (2/(1 + exp(-2*x)) - 1);}
-__device__ float plse_activate_kernel(float x)
+__device__ float linear_activate_kernel(float x){return x;}    //线性激活函数
+__device__ float logistic_activate_kernel(float x){return 1./(1. + exp(-x));}   //sigmoid
+__device__ float loggy_activate_kernel(float x){return 2./(1. + exp(-x)) - 1;}   //
+__device__ float relu_activate_kernel(float x){return x*(x>0);}   // relu
+__device__ float elu_activate_kernel(float x){return (x >= 0)*x + (x < 0)*(exp(x)-1);} 	// elu
+__device__ float relie_activate_kernel(float x){return (x>0) ? x : .01*x;}  //leaky relu 0.01
+__device__ float ramp_activate_kernel(float x){return x*(x>0)+.1*x;}   // 1,1x或0.1x(x<0)
+__device__ float leaky_activate_kernel(float x){return (x>0) ? x : .1*x;}  // leaky relu 0.1
+__device__ float tanh_activate_kernel(float x){return (2/(1 + exp(-2*x)) - 1);} // tanh
+__device__ float plse_activate_kernel(float x)  //
 {
     if(x < -4) return .01 * (x + 4);
     if(x > 4)  return .01 * (x - 4) + 1;
@@ -139,6 +139,7 @@ __device__ float gradient_kernel(float x, ACTIVATION a)
     }
     return 0;
 }
+//下面四个函数没搞懂
 
 __global__ void activate_array_kernel(float *x, int n, ACTIVATION a)
 {
