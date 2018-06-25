@@ -1,8 +1,8 @@
 #include "activation_layer.h"
 #include "utils.h"
 #include "cuda.h"
-#include "blas.h"
-#include "gemm.h"
+#include "blas.h"  //定义了batchnorm的过程，l1\l2范数，softmax输出层，
+#include "gemm.h" //矩阵乘积计算，cpu自编，gpu使用cuda的函数
 
 #include <math.h>
 #include <stdio.h>
@@ -35,13 +35,13 @@ layer make_activation_layer(int batch, int inputs, ACTIVATION activation)
     return l;
 }
 
-void forward_activation_layer(layer l, network net)
+void forward_activation_layer(layer l, network net) //激活层，将input复制后使用activation 函数
 {
     copy_cpu(l.outputs*l.batch, net.input, 1, l.output, 1);
     activate_array(l.output, l.outputs*l.batch, l.activation);
 }
 
-void backward_activation_layer(layer l, network net)
+void backward_activation_layer(layer l, network net)  //反向传播层，将delta？与梯度相乘后返回到net中
 {
     gradient_array(l.output, l.outputs*l.batch, l.activation, l.delta);
     copy_cpu(l.outputs*l.batch, l.delta, 1, net.delta, 1);
