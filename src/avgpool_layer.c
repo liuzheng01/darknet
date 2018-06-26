@@ -1,7 +1,7 @@
 #include "avgpool_layer.h"
 #include "cuda.h"
 #include <stdio.h>
-
+// 平均pooling，输出的是batch*channel，将特征图长宽平均为单一输出。
 avgpool_layer make_avgpool_layer(int batch, int w, int h, int c)
 {
     fprintf(stderr, "avg                     %4d x%4d x%4d   ->  %4d\n",  w, h, c, c);
